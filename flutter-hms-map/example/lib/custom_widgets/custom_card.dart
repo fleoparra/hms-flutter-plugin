@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -35,13 +35,20 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 4,
+      ),
       child: InkWell(
         highlightColor: Colors.transparent,
         onTap: onTap as void Function()?,
         child: Card(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(
+                30,
+              ),
+            ),
           ),
           child: Stack(
             children: <Widget>[
@@ -62,7 +69,7 @@ class CustomCard extends StatelessWidget {
                 height: 200,
                 decoration: const BoxDecoration(
                   color: Color.fromRGBO(0, 0, 0, 0.5),
-                  borderRadius: BorderRadius.all(
+                  borderRadius: const BorderRadius.all(
                     Radius.circular(30),
                   ),
                 ),

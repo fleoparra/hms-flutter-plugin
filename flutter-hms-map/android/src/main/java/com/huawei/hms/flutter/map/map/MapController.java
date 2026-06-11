@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+ * Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
+
 import io.flutter.plugin.platform.PlatformView;
 
 import java.io.ByteArrayOutputStream;
@@ -81,6 +81,8 @@ final class MapController
     private final Context context;
 
     private final Application mApplication;
+
+    private final ActivityPluginBinding activityPluginBinding;
 
     private final MapView mapView;
 
@@ -152,7 +154,7 @@ final class MapController
 
     MapController(final int id, final Context context, final Activity mActivity, final AtomicInteger activityState,
         final BinaryMessenger binaryMessenger, final Application application, final Lifecycle lifecycle,
-        final int registrarActivityHashCode, final HuaweiMapOptions options) {
+        final ActivityPluginBinding activityPluginBinding, final HuaweiMapOptions options) {
         this.context = context;
         this.activityState = activityState;
         mapView = new MapView(mActivity, options);
@@ -162,7 +164,8 @@ final class MapController
         methodChannel.setMethodCallHandler(this);
         mApplication = application;
         this.lifecycle = lifecycle;
-        activityHashCode = registrarActivityHashCode;
+        this.activityPluginBinding = activityPluginBinding;
+        activityHashCode = activityPluginBinding.getActivity().hashCode();
         mapUtils = new MapUtils(methodChannel, compactness, application);
         mapListenerHandler = new MapListenerHandler(id, mapUtils, methodChannel, application);
         logger = HMSLogger.getInstance(application);
@@ -420,14 +423,15 @@ final class MapController
                 (int) (logoPadding.right * compactness), (int) (logoPadding.bottom * compactness));
         logger.sendSingleEvent("MapController-setLogoPadding");
 
-        if (mapReadyResult != null) {
-            mapReadyResult.success(null);
-            mapReadyResult = null;
-        }
         mapListenerHandler.init(huaweiMap);
         mapUtils.init(huaweiMap, initMarkers, initPolylines, initPolygons, initCircles, initGroundOverlays,
             initTileOverlays, initHeatMaps, markersClustering, messenger);
         updateMyLocationSettings();
+
+        if (mapReadyResult != null) {
+            mapReadyResult.success(null);
+            mapReadyResult = null;
+        }
     }
 
     @Override
@@ -900,7 +904,7 @@ final class MapController
         if (disposed) {
             return;
         }
-        mapView.onResume();
+        mapView.onPause();
     }
 
     @Override
@@ -949,10 +953,22 @@ final class MapController
     }
 
     private int getActivityHashCode() {
+        if (activityPluginBinding != null) {
+            Activity activity = activityPluginBinding.getActivity();
+            if (activity != null) {
+                return activity.hashCode();
+            }
+        }
         return activityHashCode;
     }
 
     private Application getApplication() {
+        if (activityPluginBinding != null) {
+            Activity activity = activityPluginBinding.getActivity();
+            if (activity != null) {
+                return activity.getApplication();
+            }
+        }
         return mApplication;
     }
 

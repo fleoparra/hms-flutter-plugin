@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:huawei_map/huawei_map.dart';
 
 import 'package:huawei_map_example/custom_widgets/custom_action_bar.dart';
-import 'package:huawei_map_example/custom_widgets/custom_app_bar.dart';
+import 'package:huawei_map_example/custom_widgets/custom_dynamic_app_bar.dart';
 import 'package:huawei_map_example/custom_widgets/custom_icon_button.dart';
 
 class PolygonDemo extends StatefulWidget {
@@ -56,6 +56,14 @@ class _PolygonDemoState extends State<PolygonDemo> {
     mapController = controller;
   }
 
+  List<String> logs = [];
+
+  void addLog(String log) {
+    setState(() {
+      logs.add(log);
+    });
+  }
+
   void _addPolygons() {
     polygon0 = Polygon(
       polygonId: const PolygonId('polygon_id_0'),
@@ -67,6 +75,7 @@ class _PolygonDemoState extends State<PolygonDemo> {
       clickable: true,
       onClick: () {
         log('Polygon #0 clicked');
+        logs.add('Polygon #0 clicked');
       },
     );
 
@@ -79,6 +88,7 @@ class _PolygonDemoState extends State<PolygonDemo> {
       clickable: true,
       onClick: () {
         log('Polygon #1 clicked');
+        logs.add('Polygon #1 clicked');
       },
     );
 
@@ -125,6 +135,45 @@ class _PolygonDemoState extends State<PolygonDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomDynamicAppBar(
+        title: 'Polygons',
+        actions: [
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Scaffold(
+                      appBar: AppBar(),
+                      body: SizedBox(
+                        child: GestureDetector(
+                          onDoubleTap: () {
+                            setState(() {
+                              logs.clear();
+                            });
+                          },
+                          child: ListView.builder(
+                            itemCount: logs.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 5),
+                                child: SelectableText(
+                                  '> ${logs[index]}',
+                                  style: const TextStyle(color: Colors.black54),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  });
+            },
+            icon: Icon(Icons.logo_dev),
+          ),
+        ],
+      ),
       body: Stack(
         children: <Widget>[
           HuaweiMap(
@@ -146,9 +195,6 @@ class _PolygonDemoState extends State<PolygonDemo> {
               left: 15,
               bottom: 75,
             ),
-          ),
-          const CustomAppBar(
-            title: 'Polygons',
           ),
           CustomActionBar(
             children: <Widget>[

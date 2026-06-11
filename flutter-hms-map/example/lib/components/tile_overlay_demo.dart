@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:huawei_map/huawei_map.dart';
 
 import 'package:huawei_map_example/custom_widgets/custom_action_bar.dart';
-import 'package:huawei_map_example/custom_widgets/custom_app_bar.dart';
+import 'package:huawei_map_example/custom_widgets/custom_dynamic_app_bar.dart';
 import 'package:huawei_map_example/custom_widgets/custom_icon_button.dart';
 
 class TileOverlayDemo extends StatefulWidget {
@@ -58,6 +58,7 @@ class _TileOverlayDemoState extends State<TileOverlayDemo> {
         });
       },
     );
+    addLog('loadAsset');
   }
 
   void _onMapCreated(HuaweiMapController controller) {
@@ -120,6 +121,7 @@ class _TileOverlayDemoState extends State<TileOverlayDemo> {
     if (_tileOverlays.isNotEmpty) {
       for (int i = 0; i <= _tileOverlays.length - 1; i++) {
         mapController.clearTileCache(_tileOverlays.elementAt(i));
+        addLog('tile cache at $i is cleared');
       }
     }
   }
@@ -148,6 +150,14 @@ class _TileOverlayDemoState extends State<TileOverlayDemo> {
     }
   }
 
+  var logs = [];
+
+  void addLog(String log) {
+    setState(() {
+      logs.add(log);
+    });
+  }
+
   void _clear() {
     setState(() {
       _tileOverlays.clear();
@@ -157,6 +167,45 @@ class _TileOverlayDemoState extends State<TileOverlayDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomDynamicAppBar(
+        title: 'Tile Overlays',
+        actions: [
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Scaffold(
+                      appBar: AppBar(),
+                      body: SizedBox(
+                        child: GestureDetector(
+                          onDoubleTap: () {
+                            setState(() {
+                              logs.clear();
+                            });
+                          },
+                          child: ListView.builder(
+                            itemCount: logs.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 5),
+                                child: SelectableText(
+                                  '> ${logs[index]}',
+                                  style: const TextStyle(color: Colors.black54),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  });
+            },
+            icon: Icon(Icons.logo_dev),
+          ),
+        ],
+      ),
       body: Stack(
         children: <Widget>[
           HuaweiMap(
@@ -180,9 +229,6 @@ class _TileOverlayDemoState extends State<TileOverlayDemo> {
               left: 15,
               bottom: 75,
             ),
-          ),
-          const CustomAppBar(
-            title: 'Tile Overlays',
           ),
           CustomActionBar(
             children: <Widget>[

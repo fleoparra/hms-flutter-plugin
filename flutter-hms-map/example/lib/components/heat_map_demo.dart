@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
  
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -79,8 +79,8 @@ class _HeatMapDemoState extends State<HeatMapDemo> {
 
   void _changeOpacity() {
     if (heatMap0 != null && _heatMaps.isNotEmpty) {
-      if (!_opacityChanged) {
-        setState(() {
+      setState(() {
+        if (!_opacityChanged) {
           _heatMaps.remove(heatMap0);
           heatMap0 = heatMap0!.updateCopy(
             dataSet: _dataSet,
@@ -92,9 +92,7 @@ class _HeatMapDemoState extends State<HeatMapDemo> {
           );
           _heatMaps.add(heatMap0!);
           _opacityChanged = !_opacityChanged;
-        });
-      } else {
-        setState(() {
+        } else {
           _heatMaps.remove(heatMap0);
           heatMap0 = heatMap0!.updateCopy(
             opacityMap: <double, double>{
@@ -103,8 +101,8 @@ class _HeatMapDemoState extends State<HeatMapDemo> {
           );
           _heatMaps.add(heatMap0!);
           _opacityChanged = !_opacityChanged;
-        });
-      }
+        }
+      });
     }
   }
 

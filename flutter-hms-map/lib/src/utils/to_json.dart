@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -184,9 +184,9 @@ dynamic polygonToJson(Polygon polygon) {
 List<int> colorValuesToJson(List<Color> colorValues) {
   List<int> intColorValues = <int>[];
 
-  colorValues.forEach((element) {
+  for (var element in colorValues) {
     intColorValues.add(element.value);
-  });
+  }
 
   return intColorValues;
 }
@@ -405,8 +405,7 @@ Map<String, dynamic> myLocationStyleToJson(MyLocationStyle myLocationStle) {
 
   addToJson(json, _Param.anchor, offsetToJson(myLocationStle.anchor));
   addToJson(json, _Param.radiusFillColor, myLocationStle.radiusFillColor.value);
-  addToJson(json, _Param.icon,
-      myLocationStle.icon != null ? myLocationStle.icon!.toJson() : null);
+  addToJson(json, _Param.icon, myLocationStle.icon?.toJson());
 
   return json;
 }

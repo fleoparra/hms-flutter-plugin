@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:huawei_map/huawei_map.dart';
 
 import 'package:huawei_map_example/custom_widgets/custom_action_bar.dart';
-import 'package:huawei_map_example/custom_widgets/custom_app_bar.dart';
+import 'package:huawei_map_example/custom_widgets/custom_dynamic_app_bar.dart';
 import 'package:huawei_map_example/custom_widgets/custom_icon_button.dart';
 
 class MarkerDemo extends StatefulWidget {
@@ -83,46 +83,38 @@ class _MarkerDemoState extends State<MarkerDemo> {
   }
 
   void _markersClusteringButton() {
-    if (_markersClustering) {
-      setState(() {
+    setState(() {
+      if (_markersClustering) {
         _markersClustering = false;
-      });
-    } else {
-      setState(() {
+      } else {
         _markersClustering = true;
-      });
-    }
+      }
+    });
   }
 
   void changeMarkerColor() {
     if (markerWithColor != null && _markers.isNotEmpty) {
-      if (!_colorChanged) {
-        setState(
-          () {
-            _markers.remove(markerWithColor);
-            markerWithColor = markerWithColor!.updateCopy(
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueOrange,
-              ),
-            );
-            _markers.add(markerWithColor!);
-            _colorChanged = !_colorChanged;
-          },
-        );
-      } else {
-        setState(
-          () {
-            _markers.remove(markerWithColor);
-            markerWithColor = markerWithColor!.updateCopy(
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueMagenta,
-              ),
-            );
-            _markers.add(markerWithColor!);
-            _colorChanged = !_colorChanged;
-          },
-        );
-      }
+      setState(() {
+        if (!_colorChanged) {
+          _markers.remove(markerWithColor);
+          markerWithColor = markerWithColor!.updateCopy(
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueOrange,
+            ),
+          );
+          _markers.add(markerWithColor!);
+          _colorChanged = !_colorChanged;
+        } else {
+          _markers.remove(markerWithColor);
+          markerWithColor = markerWithColor!.updateCopy(
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueMagenta,
+            ),
+          );
+          _markers.add(markerWithColor!);
+          _colorChanged = !_colorChanged;
+        }
+      });
     }
   }
 
@@ -286,6 +278,10 @@ class _MarkerDemoState extends State<MarkerDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomDynamicAppBar(
+        title: 'Markers',
+        actions: null,
+      ),
       body: Stack(
         children: <Widget>[
           HuaweiMap(
@@ -308,9 +304,6 @@ class _MarkerDemoState extends State<MarkerDemo> {
               left: 15,
               bottom: 75,
             ),
-          ),
-          const CustomAppBar(
-            title: 'Markers',
           ),
           CustomActionBar(
             children: <Widget>[

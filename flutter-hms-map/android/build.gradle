@@ -9,11 +9,12 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.0'
+        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'com.huawei.agconnect:agcp:1.9.1.300'
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
         mavenCentral()
@@ -21,19 +22,25 @@ rootProject.allprojects {
     }
 }
 
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion "31.0.0"
-
-    if (project.android.hasProperty("namespace")) {
-        namespace 'com.huawei.hms.flutter.map'
-    }
+    namespace "com.huawei.hms.flutter.map"
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0"
 
     defaultConfig {
         minSdkVersion 20
-        targetSdkVersion 33
+        targetSdkVersion 34
     }
 
     lintOptions {
@@ -49,4 +56,16 @@ android {
 dependencies {
     implementation 'com.huawei.hms:maps:6.11.2.301'
     implementation 'androidx.interpolator:interpolator:1.0.0'
+}
+
+// Force Gradle to use the JDK compiler from JAVA_HOME in all environments (including codecheck containers)
+tasks.withType(JavaCompile).configureEach {
+    options.fork = true
+    def javaHome = System.getenv("JAVA_HOME")
+    if (javaHome != null) {
+        def javacPath = new File(javaHome, "bin/javac")
+        if (javacPath.exists()) {
+            options.forkOptions.executable = javacPath.absolutePath
+        }
+    }
 }

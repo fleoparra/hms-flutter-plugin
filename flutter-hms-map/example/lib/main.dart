@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -30,9 +30,43 @@ import 'package:huawei_map_example/huawei_map_demo.dart';
 
 void main() {
   runApp(
-    const MaterialApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Hms Map Flutter Plugin Demo',
       home: HomePage(),
+      theme: ThemeData.light().copyWith(
+        platform: TargetPlatform.android,
+        iconTheme: IconThemeData(
+          color: Colors.blueGrey,
+          size: 20.0,
+        ),
+        dividerTheme: DividerThemeData(
+          space: 1.0,
+          thickness: 2.0,
+          color: Colors.blueGrey.shade200,
+        ),
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          shadowColor: Colors.black54,
+          elevation: 4.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+        ),
+        tooltipTheme: TooltipThemeData(
+          decoration: BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          textStyle: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Colors.blue,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey,
+          elevation: 10.0,
+        ),
+      ),
     ),
   );
 }
@@ -54,6 +88,84 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     HuaweiMapInitializer.initializeMap();
     super.initState();
+    // TODO: set your apiKey which is located in agconnect-services file
+    HuaweiMapInitializer.setApiKey(apiKey: "");
+  }
+
+  void showLoggerDialog(String log) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.blueAccent,
+          title: Text(
+            "Log",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 2,
+            ),
+          ),
+          content: Text(
+            log,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white70,
+              fontStyle: FontStyle.italic,
+              letterSpacing: 1.5,
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                'Close',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showSnackbar(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          letterSpacing: 2,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+      backgroundColor: Colors.deepPurpleAccent,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(
+            30,
+          ),
+        ),
+      ),
+      margin: const EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      action: SnackBarAction(
+        label: 'DISMISS',
+        onPressed: () {},
+        textColor: Colors.white,
+      ),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
@@ -117,6 +229,14 @@ class _HomePageState extends State<HomePage> {
               <Widget>[
                 Column(
                   children: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        SwitchHelper.switchView();
+                        setState(() {});
+                      },
+                      child: Text('switch view'),
+                    ),
+                    Text('using android view : ${SwitchHelper.useAndroidView}'),
                     const SizedBox(
                       height: 10,
                     ),
@@ -275,7 +395,7 @@ class _HomePageState extends State<HomePage> {
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
-                        'Calculate distance between to coordinate points.',
+                        'Calculate distance between two coordinate points.',
                       ),
                     ),
                     Padding(
@@ -291,6 +411,10 @@ class _HomePageState extends State<HomePage> {
                           setState(() {
                             if (result != null) distance = result;
                           });
+
+                          if (result != null) {
+                            showLoggerDialog(result.toString());
+                          }
                         },
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30.0)),
@@ -343,6 +467,11 @@ class _HomePageState extends State<HomePage> {
                           setState(() {
                             convertedLatLng = result;
                           });
+
+                          if (convertedLatLng != null) {
+                            showLoggerDialog(
+                                '${convertedLatLng!.lat} : ${convertedLatLng!.lng}');
+                          }
                         },
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(
@@ -387,9 +516,11 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () {
                           if (hmsLoggerStatus) {
                             HuaweiMapUtils.disableLogger();
+                            showSnackbar("HMS Logger is disabled");
                             hmsLoggerStatus = false;
                           } else {
                             HuaweiMapUtils.enableLogger();
+                            showSnackbar("HMS Logger is enabled");
                             hmsLoggerStatus = true;
                           }
                         },

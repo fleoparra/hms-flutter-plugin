@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:huawei_map/huawei_map.dart';
 
 import 'package:huawei_map_example/custom_widgets/custom_action_bar.dart';
-import 'package:huawei_map_example/custom_widgets/custom_app_bar.dart';
+import 'package:huawei_map_example/custom_widgets/custom_dynamic_app_bar.dart';
 import 'package:huawei_map_example/custom_widgets/custom_icon_button.dart';
 
 class GroundOverlayDemo extends StatefulWidget {
@@ -47,6 +47,14 @@ class _GroundOverlayDemoState extends State<GroundOverlayDemo> {
 
   late BitmapDescriptor _grounOverlayIcon;
 
+  var logs = [];
+
+  void addLog(String log) {
+    setState(() {
+      logs.add(log);
+    });
+  }
+
   void _onMapCreated(HuaweiMapController controller) {
     mapController = controller;
   }
@@ -58,6 +66,7 @@ class _GroundOverlayDemoState extends State<GroundOverlayDemo> {
       position: position,
       onClick: () {
         log('Ground Overlay #1 pressed.');
+        addLog('Ground Overlay #1 pressed.');
       },
       width: 3000,
       height: 3000,
@@ -76,6 +85,7 @@ class _GroundOverlayDemoState extends State<GroundOverlayDemo> {
       clickable: true,
       onClick: () {
         log('Ground Overlay #2 pressed.');
+        addLog('Ground Overlay #2 pressed.');
       },
     );
 
@@ -87,50 +97,34 @@ class _GroundOverlayDemoState extends State<GroundOverlayDemo> {
 
   void _changeTransparency() {
     if (groundOverlay0 != null && _groundOverlays.isNotEmpty) {
-      if (!_transparencyChanged) {
-        setState(
-          () {
-            _groundOverlays.remove(groundOverlay0);
-            groundOverlay0 = groundOverlay0!.updateCopy(transparency: 0);
-            _groundOverlays.add(groundOverlay0!);
-            _transparencyChanged = !_transparencyChanged;
-          },
-        );
-      } else {
-        setState(
-          () {
-            _groundOverlays.remove(groundOverlay0);
-            groundOverlay0 = groundOverlay0!.updateCopy(transparency: 0.5);
-            _groundOverlays.add(groundOverlay0!);
-            _transparencyChanged = !_transparencyChanged;
-          },
-        );
-      }
+      setState(() {
+        if (!_transparencyChanged) {
+          _groundOverlays.remove(groundOverlay0);
+          groundOverlay0 = groundOverlay0!.updateCopy(transparency: 0);
+          _groundOverlays.add(groundOverlay0!);
+          _transparencyChanged = !_transparencyChanged;
+        } else {
+          _groundOverlays.remove(groundOverlay0);
+          groundOverlay0 = groundOverlay0!.updateCopy(transparency: 0.5);
+          _groundOverlays.add(groundOverlay0!);
+          _transparencyChanged = !_transparencyChanged;
+        }
+      });
     }
   }
 
   void _changeSize() {
     if (groundOverlay1 != null && _groundOverlays.isNotEmpty) {
       if (!_sizeChanged) {
-        setState(
-          () {
-            _groundOverlays.remove(groundOverlay1);
-            groundOverlay1 =
-                groundOverlay1!.updateCopy(width: 5000, height: 5000);
-            _groundOverlays.add(groundOverlay1!);
-            _sizeChanged = !_sizeChanged;
-          },
-        );
+        _groundOverlays.remove(groundOverlay1);
+        groundOverlay1 = groundOverlay1!.updateCopy(width: 5000, height: 5000);
+        _groundOverlays.add(groundOverlay1!);
+        _sizeChanged = !_sizeChanged;
       } else {
-        setState(
-          () {
-            _groundOverlays.remove(groundOverlay1);
-            groundOverlay1 =
-                groundOverlay1!.updateCopy(width: 1500, height: 1500);
-            _groundOverlays.add(groundOverlay1!);
-            _sizeChanged = !_sizeChanged;
-          },
-        );
+        _groundOverlays.remove(groundOverlay1);
+        groundOverlay1 = groundOverlay1!.updateCopy(width: 1500, height: 1500);
+        _groundOverlays.add(groundOverlay1!);
+        _sizeChanged = !_sizeChanged;
       }
     }
   }
@@ -157,6 +151,45 @@ class _GroundOverlayDemoState extends State<GroundOverlayDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomDynamicAppBar(
+        title: 'Ground Overlays',
+        actions: [
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Scaffold(
+                      appBar: AppBar(),
+                      body: SizedBox(
+                        child: GestureDetector(
+                          onDoubleTap: () {
+                            setState(() {
+                              logs.clear();
+                            });
+                          },
+                          child: ListView.builder(
+                            itemCount: logs.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 5),
+                                child: SelectableText(
+                                  '> ${logs[index]}',
+                                  style: const TextStyle(color: Colors.black54),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  });
+            },
+            icon: Icon(Icons.logo_dev),
+          ),
+        ],
+      ),
       body: Stack(
         children: <Widget>[
           HuaweiMap(
@@ -173,14 +206,11 @@ class _GroundOverlayDemoState extends State<GroundOverlayDemo> {
             myLocationEnabled: true,
             trafficEnabled: false,
             groundOverlays: _groundOverlays,
-            logoPosition: HuaweiMap.LOWER_LEFT,
+            logoPosition: HuaweiMap.UPPER_LEFT,
             logoPadding: const EdgeInsets.only(
               left: 15,
               bottom: 75,
             ),
-          ),
-          const CustomAppBar(
-            title: 'Ground Overlays',
           ),
           CustomActionBar(
             children: <Widget>[

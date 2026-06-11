@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ class CustomIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      key: key,
+      padding: EdgeInsets.zero,
       icon: Icon(icon, color: Colors.white),
       tooltip: tooltip,
       onPressed: onPressed as void Function()?,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024. Huawei Technologies Co., Ltd. All rights reserved.
+ * Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -72,9 +72,9 @@ import com.huawei.hms.maps.model.animation.RotateAnimation;
 import com.huawei.hms.maps.model.animation.ScaleAnimation;
 import com.huawei.hms.maps.model.animation.TranslateAnimation;
 
+import io.flutter.FlutterInjector;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.FlutterInjector;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,7 +103,7 @@ public class Convert {
 
         for (Map.Entry<?, ?> entry : args.entrySet()) {
             result.put(Convert.toFloatWrapper(entry.getKey()),
-                toIntegerWrapper(Long.parseLong((String) entry.getValue())));
+                    toIntegerWrapper(Long.parseLong((String) entry.getValue())));
         }
         return result;
     }
@@ -197,15 +197,15 @@ public class Convert {
             case Param.FROM_ASSET:
                 if (data.size() == 2) {
                     return BitmapDescriptorFactory.fromAsset(
-                        FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(Convert.toString(data.get(1))));
+                            FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(Convert.toString(data.get(1))));
                 } else {
                     return BitmapDescriptorFactory.fromAsset(
-                        FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(Convert.toString(data.get(1)), Convert.toString(data.get(2))));
+                            FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(Convert.toString(data.get(1)), Convert.toString(data.get(2))));
                 }
             case Param.FROM_ASSET_IMAGE:
                 if (data.size() == 3) {
                     return BitmapDescriptorFactory.fromAsset(
-                        FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(Convert.toString(data.get(1))));
+                            FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(Convert.toString(data.get(1))));
                 } else {
                     throw new IllegalArgumentException(Param.ERROR);
                 }
@@ -271,12 +271,12 @@ public class Convert {
                 return CameraUpdateFactory.newLatLng(toLatLng(data.get(1)));
             case Param.NEW_LAT_LNG_BOUNDS:
                 return CameraUpdateFactory.newLatLngBounds(toLatLngBounds(data.get(1)),
-                    toPixels(data.get(2), compactness));
+                        toPixels(data.get(2), compactness));
             case Param.NEW_LAT_LNG_ZOOM:
                 return CameraUpdateFactory.newLatLngZoom(toLatLng(data.get(1)), Convert.toFloat(data.get(2)));
             case Param.SCROLL_BY:
                 return CameraUpdateFactory.scrollBy(toFinePixels(data.get(1), compactness),
-                    toFinePixels(data.get(2), compactness));
+                        toFinePixels(data.get(2), compactness));
             case Param.ZOOM_BY:
                 if (data.size() == 2) {
                     return CameraUpdateFactory.zoomBy(Convert.toFloat(data.get(1)));
@@ -336,7 +336,7 @@ public class Convert {
             for (int i = 0; i < tileProvidersData.length(); i++) {
                 final JSONObject obj = tileProvidersData.getJSONObject(i);
                 final List<Integer> set = Arrays.asList(obj.optInt(Param.X), obj.optInt(Param.Y),
-                    obj.optInt(Param.ZOOM));
+                        obj.optInt(Param.ZOOM));
                 mapTypeTwo.put(set, obj.optString(Param.IMAGE_DATA));
             }
             tileProvider = (x, y, zoom) -> {
@@ -369,8 +369,8 @@ public class Convert {
                         if (uri != null) {
                             try {
                                 return new URL(uri.replace("{x}", String.valueOf(x))
-                                    .replace("{y}", String.valueOf(y))
-                                    .replace("{z}", String.valueOf(zoom)));
+                                        .replace("{y}", String.valueOf(y))
+                                        .replace("{z}", String.valueOf(zoom)));
                             } catch (final MalformedURLException e) {
                                 Log.w("UrlTileProvider", e.getMessage());
                                 return null;
@@ -412,7 +412,7 @@ public class Convert {
     }
 
     public static String processMarkerOptions(final Object o, final MarkerMethods call,
-        final BinaryMessenger messenger) {
+                                              final BinaryMessenger messenger) {
         final Map<?, ?> data = Convert.toMap(o);
         final Object infoWindow = data.get(Param.INFO_WINDOW);
         if (infoWindow != null) {
@@ -505,7 +505,7 @@ public class Convert {
     }
 
     public static Animation processAnimationOptions(final Object o, final BinaryMessenger messenger)
-        throws JSONException {
+            throws JSONException {
         final JSONObject data = (JSONObject) o;
 
         Animation animation = null;
@@ -530,7 +530,7 @@ public class Convert {
                 final Object fromY = data.get(Param.FROM_Y);
                 final Object toY = data.get(Param.TO_Y);
                 animation = new ScaleAnimation(Convert.toFloat(fromX), Convert.toFloat(toX), Convert.toFloat(fromY),
-                    Convert.toFloat(toY));
+                        Convert.toFloat(toY));
                 break;
             case "HmsTranslateAnimation":
                 final JSONArray latLng = (JSONArray) data.get(Param.LAT_LNG);
@@ -641,14 +641,14 @@ public class Convert {
         if (minMaxZoomPreference != null) {
             final List<?> zoomPreferenceData = Convert.toList(minMaxZoomPreference);
             call.setMinMaxZoomPreference(Convert.toFloatWrapper(zoomPreferenceData.get(0)),
-                Convert.toFloatWrapper(zoomPreferenceData.get(1)));
+                    Convert.toFloatWrapper(zoomPreferenceData.get(1)));
         }
 
         final Object padding = args.get(Param.PADDING);
         if (padding != null) {
             final List<?> paddingData = Convert.toList(padding);
             call.setPadding(Convert.toFloat(paddingData.get(0)), Convert.toFloat(paddingData.get(1)),
-                Convert.toFloat(paddingData.get(2)), Convert.toFloat(paddingData.get(3)));
+                    Convert.toFloat(paddingData.get(2)), Convert.toFloat(paddingData.get(3)));
         }
 
         final Object trackCameraPosition = args.get(Param.TRACK_CAMERA_POSITION);
@@ -692,10 +692,10 @@ public class Convert {
         }
 
         final Object isScrollGesturesEnabledDuringRotateOrZoom = args.get(
-            Param.IS_SCROLL_GESTURES_ENABLED_DURING_ROTATE_OR_ZOOM);
+                Param.IS_SCROLL_GESTURES_ENABLED_DURING_ROTATE_OR_ZOOM);
         if (isScrollGesturesEnabledDuringRotateOrZoom != null) {
             call.setScrollGesturesEnabledDuringRotateOrZoom(
-                Convert.toBoolean(isScrollGesturesEnabledDuringRotateOrZoom));
+                    Convert.toBoolean(isScrollGesturesEnabledDuringRotateOrZoom));
         }
 
         final Object gestureScaleByMapCenter = args.get(Param.GESTURE_SCALE_BY_MAP_CENTER);
@@ -732,7 +732,7 @@ public class Convert {
         if (logoPadding != null) {
             final List<?> paddingData = Convert.toList(logoPadding);
             call.setLogoPadding(Convert.toInt(paddingData.get(1)), Convert.toInt(paddingData.get(0)),
-                Convert.toInt(paddingData.get(3)), Convert.toInt(paddingData.get(2)));
+                    Convert.toInt(paddingData.get(3)), Convert.toInt(paddingData.get(2)));
         }
 
         final Object previewId = args.get(Param.PREVIEW_ID);
@@ -922,7 +922,7 @@ public class Convert {
     }
 
     public static String processCircleOptions(final Object o, final CircleMethods call,
-        final BinaryMessenger messenger) {
+                                              final BinaryMessenger messenger) {
         final Map<?, ?> args = Convert.toMap(o);
         final Object clickable = args.get(Param.CLICKABLE);
         if (clickable != null) {

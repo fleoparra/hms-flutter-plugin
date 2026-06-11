@@ -1,3 +1,42 @@
+## 6.12.0+301
+
+- Minor optimization.
+
+## 6.12.0+300
+
+This release modernizes the plugin for Flutter's latest versions and ensures compliance with Google Play's upcoming 16KB page size requirement.
+
+Breaking Changes
+
+Minimum Android SDK version increased to 20.
+Removed Flutter Embedding V1 support (deprecated backward compatibility code).
+Apps using this plugin must update to Gradle 8.4+ and AGP 7.4.2+.
+Build System Updates
+
+Upgraded Gradle wrapper from 6.8.3 to 8.4.
+AndroidManifest.xml Updates
+
+Removed deprecated package attribute from AndroidManifest.xml.
+Package declaration now uses namespace in build.gradle (AGP 8.x standard).
+Added android:exported attributes where required for AGP 8+ compliance.
+
+Dependencies
+
+Added androidx.annotation:annotation:1.8.2 for proper annotation support.
+Added androidx.core:core:1.13.1 for AndroidX compatibility.
+Flutter Embedding V2 Migration
+Cleaned up V1 embedding backward compatibility code.
+Full support for Flutter Embedding V2 API.
+Gradle Configuration
+
+## 6.11.2+305
+ 
+- Minor optimization.
+
+## 6.11.2+304
+
+- Minor optimization.
+
 ## 6.11.2+303
 
 - Dart improvements.
