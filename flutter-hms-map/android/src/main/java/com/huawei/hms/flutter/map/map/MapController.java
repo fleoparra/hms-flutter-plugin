@@ -942,13 +942,19 @@ final class MapController
     @SuppressLint("MissingPermission")
     private void updateMyLocationSettings() {
         if (MapLocation.hasLocationPermission(context)) {
-            logger.startMethodExecutionTimer("MapController-setMyLocationEnabled");
-            huaweiMap.setMyLocationEnabled(myLocationEnabled);
-            logger.sendSingleEvent("MapController-setMyLocationEnabled");
+            // Aun con el permiso concedido a la app, el SDK de Huawei hace su propia verificación y a veces lanza
+            // SecurityException desde onMapReady, lo que cierra la app. Sin la capa de "mi ubicación" el mapa sigue sirviendo.
+            try {
+                logger.startMethodExecutionTimer("MapController-setMyLocationEnabled");
+                huaweiMap.setMyLocationEnabled(myLocationEnabled);
+                logger.sendSingleEvent("MapController-setMyLocationEnabled");
 
-            logger.startMethodExecutionTimer("MapController-setMyLocationButtonEnabled");
-            huaweiMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
-            logger.sendSingleEvent("MapController-setMyLocationButtonEnabled");
+                logger.startMethodExecutionTimer("MapController-setMyLocationButtonEnabled");
+                huaweiMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
+                logger.sendSingleEvent("MapController-setMyLocationButtonEnabled");
+            } catch (SecurityException e) {
+                Log.w("MapController", "setMyLocationEnabled", e);
+            }
         }
     }
 
